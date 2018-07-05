@@ -35,7 +35,8 @@ function game:initialize()
 		debug = love.graphics.newFont("assets/gfx/fonts/pixelmix.ttf", math.floor(self.width/31)),
 		hud = love.graphics.newFont("assets/gfx/fonts/pixelmix.ttf", math.floor(self.width/16)),
 		button = love.graphics.newFont("assets/gfx/fonts/pixelmix.ttf", math.floor(self.width/17)),
-		death = love.graphics.newFont("assets/gfx/fonts/pixelmix.ttf", math.floor(self.width/13))
+		death = love.graphics.newFont("assets/gfx/fonts/pixelmix.ttf", math.floor(self.width/13)),
+		deathScore = love.graphics.newFont("assets/gfx/fonts/pixelmix.ttf", math.floor(self.width/20)), --Lmao i should replace this font system what was i thinking
 	}
 
 	self.titleY = -100
@@ -46,6 +47,7 @@ function game:initialize()
 	self.music = false
 	self.vibration = false 
 	self.arrowHelp = false
+	self.textTimer = 5
 	local data = self:getSave()
 	if data["sfx"] then 
 		self.sfx = true
@@ -103,6 +105,8 @@ function game:update(dt)
 			boulderInterval = 0.4
 		end
 
+		self.textTimer = self.textTimer - dt
+
 
 	elseif self.state == "menu" or self.state == "settingsPanel" then 
 		if self.titleY < self.height/9 then 
@@ -128,7 +132,6 @@ function game:draw()
 		love.graphics.setColor(255,255,255)
 		love.graphics.setFont(self.fonts["score"])
 		love.graphics.print(math.floor(player.score), findMiddle(math.floor(player.score), "score"), self.height/7)
-
 		if player.powerup.kind ~= "empty" then --Powerup timer
 			local p = player.powerup
 
@@ -146,8 +149,11 @@ function game:draw()
 
 		if self.arrowHelp then 
 			love.graphics.setColor(1, 1, 1, 0.75)
-			love.graphics.draw(arrowLeftImage, 10, 600, 0, 7, 7)
-			love.graphics.draw(arrowRightImage, game.width-10-(arrowRightImage:getWidth()*7), 600, 0, 7, 7)
+			love.graphics.draw(arrowLeftImage, 10, 590, 0, 7, 7)
+			love.graphics.draw(arrowRightImage, game.width-10-(arrowRightImage:getWidth()*7), 590, 0, 7, 7)
+			love.graphics.setFont(self.fonts["text"])
+			love.graphics.setColor(1,1,1, self.textTimer)
+			love.graphics.print("Tap & hold to move", findMiddle("Tap & hold to move", "text"), self.height-self.height/20)
 		end
 
 		love.graphics.setColor(1, 1, 1, 1)
@@ -272,6 +278,7 @@ function game:reset()
 
 	boulderSpeed = 1.5
 	self.titleY = -100
+	self.textTimer = 5
 	self.stage:reset()
 	
 	player:reset()

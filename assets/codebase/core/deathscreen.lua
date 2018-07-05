@@ -23,6 +23,8 @@ function deathscreen:draw()
 
 	love.graphics.setFont(game.fonts["hud"])
 	love.graphics.print("YOU DIED!", findMiddle("YOU DIED!", "hud"), game.height/6)
+	love.graphics.setFont(game.fonts["deathScore"])
+	love.graphics.print("Score: "..math.floor(player.score), findMiddle("Score: "..math.floor(player.score), "deathScore"), game.height/4.5)
 
 	love.graphics.setFont(game.fonts["button"])
 	gooi.draw("deathscreen")

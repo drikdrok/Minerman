@@ -4,7 +4,8 @@
 
 require("assets/codebase/core/require")
 
-version = "v 1.0.2"
+version = "v 1.0.3"
+
 
 function love.load()
 	love.graphics.setDefaultFilter("nearest", "nearest")
@@ -46,9 +47,7 @@ function love.draw()
 
 
 	if debug then 
-		local touches = love.touch.getTouches()
-		love.graphics.setFont(game.fonts["debug"])   
-		love.graphics.print(game.stage.layer)
+		love.graphics.print(love.timer.getFPS())
 	end
 
 
@@ -57,7 +56,7 @@ end
 
 function love.keypressed(key)
 	game:keypressed(key)
-	if key == "f1" then 
+	if key == "p" then 
 		debug = not debug
 	end
 end
