@@ -100,6 +100,9 @@ function player:update(dt)
 					if game.sfx then 
 						love.audio.play(drillEffect)
 					end
+					self.powerup.streak = self.powerup.streak + 1
+					self.score = self.score + self.powerup.streak
+					drillPoint:new(v.other.x, v.other.y)
 					v.other:destroy("drill")
 				else
 					self:die()

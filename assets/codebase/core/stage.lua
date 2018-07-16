@@ -27,12 +27,14 @@ function stage:initialize()
 	self.backgroundImageY = 0
 	self.transitionBackgroundImageY = game.height
 
+	self.state = "ground"
+
 	self.groundY = player.y+player.height
 	self.groundImage = self.grounds[1]
 end
 
 function stage:update(dt)
-	if math.floor(player.score) == self.caveTime or math.floor(player.score) == self.hellTime then 
+	if math.floor(player.score) >= self.caveTime and self.state == "ground" or math.floor(player.score) >= self.hellTime and self.state == "cave" then 
 		if not self.transitioning then 
 			self:startTransition()
 		end
@@ -83,6 +85,12 @@ function stage:startTransition()
 		player.scoreSpeed = 6
 	end
 
+	if self.state == "ground" then 
+		self.state = "cave"
+	elseif self.state == "cave" then 
+		self.state = "hell"
+	end
+
 	self.transitionBackgroundImage = self.backgrounds[self.layer]
 	self.transitioning = true
 	self.transitionTimer = 0
@@ -108,6 +116,8 @@ function stage:reset()
 
 	self.caveTime = math.random(95, 130)
 	self.hellTime = math.random(350, 400)
+
+	self.state = "ground"
 
 	self.backgrounds[2] = self:decideCave()
 end

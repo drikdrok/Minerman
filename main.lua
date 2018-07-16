@@ -47,7 +47,7 @@ function love.draw()
 
 
 	if debug then 
-		love.graphics.print(love.timer.getFPS())
+		love.graphics.print(#drillPoints)
 	end
 
 
@@ -57,6 +57,8 @@ end
 function love.keypressed(key)
 	game:keypressed(key)
 	if key == "p" then 
+		debug = not debug
+	elseif key == "f1" then 
 		debug = not debug
 	end
 end

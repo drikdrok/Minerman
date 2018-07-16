@@ -53,6 +53,8 @@ function powerup:initialize(kind, x, y, lifetime)
 
 	self.state = "falling"
 
+	self.streak = 0
+
 	self.id = #powerups+1
 	table.insert(powerups, self)
 
@@ -144,6 +146,7 @@ function powerup:pickUp()
 		player:setAnimationSpeed(0.08)
 		self.x = 10000
 	end 	
+	drillPoints = {}
 	player.powerup = self
 	powerups[self.id] = nil
 end

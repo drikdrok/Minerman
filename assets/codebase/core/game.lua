@@ -81,6 +81,7 @@ function game:update(dt)
 		updateBoulders(dt)
 		updateParticles(dt)
 		updatePowerups(dt)
+		updateDrillPoints(dt)
 
 		self.stage:update(dt)
 
@@ -127,6 +128,7 @@ function game:draw()
 		drawBoulders()
 		drawParticles()
 		drawPowerups()
+		drawDrillPoints()
 
 		--HUD / GUI
 		love.graphics.setColor(255,255,255)
@@ -286,6 +288,7 @@ function game:reset()
 	boulderInterval = 1.5
 	particles = {}
 	powerups = {}
+	drillPoints = {}
 	--powerup:new()
 
     pauseButton:setVisible(true)
