@@ -16,6 +16,8 @@ function game:initialize()
  	self.scale = self.width/405
 	self.scaleY = self.height/720
 
+	self.actualHeight = self.height -- I have no idea what to call this other than actualHeight?
+
 	local os = love.system.getOS()
 	platform = "pc"
 	self.menuMessage = "Press space to "
@@ -47,10 +49,13 @@ function game:initialize()
 	self.music = false
 	self.vibration = false 
 	self.arrowHelp = false
+	self.stretch = false
+
 	self.textTimer = 5
 	local data = self:getSave()
+
 	if data["sfx"] then 
-		self.sfx = true
+		self.sfx = true --Self.sfx = data["sfx"] won't work because data["sfx"] might not exist!!
 	end
 	if data["vibration"] then 
 		self.vibration = true
@@ -61,6 +66,16 @@ function game:initialize()
 
 	if data["arrows"] then
 		self.arrowHelp = true
+	end
+
+	if data["stretch"] then 
+		self.stretch = data["stretch"]
+
+	end
+	if self.stretch then 
+		self.actualHeight = self.height
+	else
+		self.actualHeight = love.graphics.getHeight()
 	end
 
 	love.graphics.setLineWidth(3)
@@ -151,11 +166,11 @@ function game:draw()
 
 		if self.arrowHelp then 
 			love.graphics.setColor(1, 1, 1, 0.75)
-			love.graphics.draw(arrowLeftImage, 10, 590, 0, 7, 7)
-			love.graphics.draw(arrowRightImage, game.width-10-(arrowRightImage:getWidth()*7), 590, 0, 7, 7)
+			love.graphics.draw(arrowLeftImage, 10, self.actualHeight-130, 0, 7, 7)
+			love.graphics.draw(arrowRightImage, game.width-10-(arrowRightImage:getWidth()*7), self.actualHeight-130, 0, 7, 7)
 			love.graphics.setFont(self.fonts["text"])
 			love.graphics.setColor(1,1,1, self.textTimer)
-			love.graphics.print("Tap & hold to move", findMiddle("Tap & hold to move", "text"), self.height-self.height/20)
+			love.graphics.print("Tap & hold to move", findMiddle("Tap & hold to move", "text"), self.actualHeight-self.actualHeight/20)
 		end
 
 		love.graphics.setColor(1, 1, 1, 1)
@@ -187,7 +202,7 @@ function game:draw()
 		love.graphics.print("Paused", findMiddle("paused", "score"), self.height/7)
 
 		love.graphics.setFont(self.fonts["text"])
-		love.graphics.print(self.menuMessage.."resume!", findMiddle(self.menuMessage.."resume!","text"), self.height-self.height/20)
+		love.graphics.print(self.menuMessage.."resume!", findMiddle(self.menuMessage.."resume!","text"), self.actualHeight-self.actualHeight/20)
 
 	
 	elseif self.state == "menu" then 
@@ -195,7 +210,7 @@ function game:draw()
 		love.graphics.draw(titleImage, game.width/2 - (titleImage:getWidth()/2*(2.5)), self.titleY, 0, 2.5, 2.5)
 
 		love.graphics.setFont(self.fonts["text"])
-		love.graphics.print(self.menuMessage.."start!", findMiddle(self.menuMessage.."start!","text"), self.height-self.height/20)
+		love.graphics.print(self.menuMessage.."start!", findMiddle(self.menuMessage.."start!","text"), self.actualHeight-self.actualHeight/20)
 		love.graphics.print("Highscore: "..player.highscore, 10, 10)
 
 		--gooi.setStyle(textButtonStyle) --Might be needed!
@@ -206,15 +221,15 @@ function game:draw()
 		love.graphics.setColor(255,255,255)
 		love.graphics.setFont(self.fonts["text"])
 		love.graphics.print("Highscore: "..player.highscore, 10, 10)
-		love.graphics.print("Choose an avatar!", findMiddle("Choose an avatar!","text"), self.height-self.height/20)
+		love.graphics.print("Choose an avatar!", findMiddle("Choose an avatar!","text"), self.actualHeight-self.actualHeight/20)
 
 		avatarPicker:draw()
 	elseif self.state == "settingsPanel" then 
 		love.graphics.setColor(255,255,255)
-		love.graphics.draw(titleImage, game.width/2 - (titleImage:getWidth()/2*(2.5)), self.titleY, 0, 2.5, 2.5)
+		love.graphics.draw(titleImage, game.width/2 - (titleImage:getWidth()/2*2.5), self.titleY, 0, 2.5, 2.5)
 
 		love.graphics.setFont(self.fonts["text"])
-		love.graphics.print("Settings", findMiddle("Settings","text"), self.height-self.height/20)
+		love.graphics.print("Settings", findMiddle("Settings","text"), self.actualHeight-self.actualHeight/20)
 		love.graphics.print("Highscore: "..player.highscore, 10, 10)
 		
 
@@ -289,7 +304,9 @@ function game:reset()
 	particles = {}
 	powerups = {}
 	drillPoints = {}
-	--powerup:new()
+	
+
+	powerup:new()
 
     pauseButton:setVisible(true)
 end 	
@@ -300,7 +317,7 @@ function game:writeSave()
 	end
 	love.filesystem.newFile("save.lua")
 
-	love.filesystem.write("save.lua", "return {highscore = "..player.highscore.. ", sfx = "..tostring(self.sfx)..", music = "..tostring(self.music)..",  vibration = "..tostring(self.vibration)..", avatar = "..avatarPicker.highlightedAvatar.position..", arrows = "..tostring(self.arrowHelp).."}")
+	love.filesystem.write("save.lua", "return {highscore = "..player.highscore.. ", sfx = "..tostring(self.sfx)..", music = "..tostring(self.music)..",  vibration = "..tostring(self.vibration)..", avatar = "..avatarPicker.highlightedAvatar.position..", arrows = "..tostring(self.arrowHelp)..", stretch = "..tostring(self.stretch).."}")
 end
 
 function game:getSave()
@@ -308,14 +325,14 @@ function game:getSave()
 
 		local data = love.filesystem.load("save.lua")
 		data = data()
-		if data["highscore"] ~= nil and data["sfx"] ~= nil and data["vibration"] ~= nil and data["avatar"] ~= nil and data["arrows"] ~= nil then 
+		if data["highscore"] ~= nil and data["sfx"] ~= nil and data["vibration"] ~= nil and data["avatar"] ~= nil and data["arrows"] ~= nil and data["stretch"] ~= nil then 
 			return data
 		else
-			return {highscore = 0, sfx = true, music = true, vibration = true, avatar = 1, arrows = true}
+			return {highscore = 0, sfx = true, music = true, vibration = true, avatar = 1, arrows = true, stretch = true}
 		end 
 	else
 		love.filesystem.newFile("save.lua")
-		return {highscore = 0, sfx = true, music = true, vibration = true, avatar = 1, arrows = true}
+		return {highscore = 0, sfx = true, music = true, vibration = true, avatar = 1, arrows = true, stretch = true}
 	end	
 end
 

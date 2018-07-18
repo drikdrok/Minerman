@@ -162,6 +162,30 @@ function createGUI() -- All gooi buttons go here
     end):setGroup("settingsPanel")
 
 
+    stretchButton = gooi.newButton({text = "", x = settingsPanel.x + settingsPanel.width / 2 - 76/2, y = settingsPanel.y + settingsPanel.height - 76*2 - 40, icon = "assets/gfx/icons/stretchButton.png", w = 76, h = 76, visible = false} -- Stretch button
+        ):onRelease(function()
+            game.stretch = not game.stretch
+
+
+            if game.stretch then 
+                gameCanvas = love.graphics.newCanvas(405, 720)
+                gooi.setCanvas(gameCanvas)
+
+                game.actualHeight = game.height
+            else
+                if math.floor(love.graphics.getHeight() / 720) >= 1 then 
+                    gameCanvas = love.graphics.newCanvas()
+                    gooi.setCanvas(gameCanvas)
+
+                    game.actualHeight = love.graphics.getHeight()
+                end
+            end
+
+        if game.sfx then
+            love.audio.play(buttonEffect)
+        end
+    end):setGroup("settingsPanel")
+
 
 
     musicButton = gooi.newButton({text = "", x = settingsPanel.x + 25, y = settingsPanel.y + settingsPanel.height - 76 - 30, icon = "assets/gfx/icons/musicButton.png", w = 76, h = 76, visible = false} -- Avatar button
@@ -231,6 +255,7 @@ function updateGUI()
         musicButton:setVisible(true)
         vibrationButton:setVisible(true)
         arrowButton:setVisible(true)
+        stretchButton:setVisible(true)
     else
         exitSettingsPanel:setVisible(false)
         resetScoreButton:setVisible(false)
@@ -238,5 +263,6 @@ function updateGUI()
         musicButton:setVisible(false)
         vibrationButton:setVisible(false)
         arrowButton:setVisible(false)
+        stretchButton:setVisible(false)
     end 
 end 

@@ -32,6 +32,10 @@ function settingsPanel:draw()
 		love.graphics.draw(crossImage, settingsPanel.x + 25, settingsPanel.y + settingsPanel.height - 76*2 - 40, 0, 76/32, 76/32)
 	end
 
+	if not game.stretch then 
+		love.graphics.draw(crossImage, settingsPanel.x + settingsPanel.width / 2 - 76/2, settingsPanel.y + settingsPanel.height - 76*2 - 40, 0, 76/32, 76/32)
+	end 
+
 	love.graphics.setFont(game.fonts["text"])
 	love.graphics.print("Christian Schwenger    ".. version, math.floor(self.x + 5), self.y + self.height - game.fonts["text"]:getHeight("Christian Schwenger    ".. version) - 2)
 end

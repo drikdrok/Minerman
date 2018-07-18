@@ -3,6 +3,7 @@ powerup = class("powerup")
 powerups = {}
 
 local hasSpawned = false
+tryTimer = 0
 
 function powerup:initialize(kind, x, y, lifetime)
 	self.kind = kind or math.random(1,2)
@@ -76,6 +77,12 @@ function powerup:update(dt)
 					end
 				end
 			end
+
+
+			if self.y > game.height + 200 then 
+				powerups[self.id] = nil
+				world:remove(self)
+			end
 		end
 	elseif self.state == "activated" then 
 		if self.kind == 1 then -- If drill 
@@ -113,6 +120,7 @@ function powerup:update(dt)
 
 			if self.y > game.height+200 then 
 				powerups[self.id] = nil --Destroy powerup
+				world:remove(self)
 			end 
 		end
 	end	
@@ -193,8 +201,12 @@ function updatePowerups(dt)
 		v:update(dt)
 	end
 
-	if math.floor(player.score % 9) == 0 then
-		if math.random(0, 15) == 5 and player.powerup.kind == "empty" then 
+	tryTimer = tryTimer - dt 
+
+	if math.floor(player.score % 9) == 0 and tryTimer <= 0 and #powerups == 0 then
+		tryTimer = 2
+		local n = math.random(0, 2)
+		if n == 1 and player.powerup.kind == "empty"then 
 			if not hasSpawned then 
 				powerup:new()
 			--	math.randomseed(os.time()+#powerups)
@@ -204,6 +216,8 @@ function updatePowerups(dt)
 	else 
 		hasSpawned = false
 	end 
+
+
 end
 
 function drawPowerups()

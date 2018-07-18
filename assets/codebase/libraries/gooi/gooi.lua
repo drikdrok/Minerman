@@ -169,7 +169,7 @@ function gooi.storeComponent(c, id)
     return c
 end
 
-function gooi.setCanvas(c)
+function gooi.setCanvas(c, yesman)
     gooi.canvas = c
     gooi.sx = love.graphics.getWidth() / gooi.canvas:getWidth()
     gooi.sy = love.graphics.getHeight() / gooi.canvas:getHeight()

@@ -4,10 +4,10 @@
 
 require("assets/codebase/core/require")
 
-version = "v 1.0.3"
 
+version = "v 1.1.0"
 
-function love.load()
+ function love.load()
 	love.graphics.setDefaultFilter("nearest", "nearest")
 	math.randomseed(os.time())
 
@@ -27,8 +27,21 @@ function love.load()
 	cloud = cloud:new()
 	deathscreen = deathscreen:new()
 
-	gameCanvas = love.graphics.newCanvas(405, 720) -- 405, 720 is very important
-	gooi.setCanvas(gameCanvas)
+
+	gameCanvas = love.graphics.newCanvas(405, 720)
+    gooi.setCanvas(gameCanvas)
+
+    game.actualHeight = game.height
+
+    if not game.stretch then 
+        if math.floor(love.graphics.getHeight() / 720) >= 1 then 
+            gameCanvas = love.graphics.newCanvas()
+            gooi.setCanvas(gameCanvas)
+
+            game.actualHeight = love.graphics.getHeight()
+        end
+    end
+
 
 	if game.music then 
 		soundtrack:play()
@@ -41,13 +54,22 @@ end
 
 function love.draw()
 	love.graphics.setCanvas{gameCanvas, stencil=true}
+		love.graphics.clear()
 		game:draw()	
 	love.graphics.setCanvas()
-	love.graphics.draw(gameCanvas, 0, 0, 0, gameCanvasScaleX, gameCanvasScaleY) -- Scale Everything
 
+	if game.stretch then 
+		love.graphics.draw(gameCanvas, 0, 0, 0, gameCanvasScaleX, gameCanvasScaleY) -- Scale Everything
+	else
+		if math.floor(love.graphics.getHeight() / 720) >= 1 then 
+			love.graphics.draw(gameCanvas, 0, 0, 0, gameCanvasScaleX, math.floor(love.graphics.getHeight() / 720)) -- Scale in 9:16
+		else
+			love.graphics.draw(gameCanvas, 0, 0, 0, gameCanvasScaleX, gameCanvasScaleY)
+		end
+	end
 
 	if debug then 
-		love.graphics.print(#drillPoints)
+		love.graphics.print(love.timer.getFPS())
 	end
 
 
