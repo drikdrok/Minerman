@@ -9,7 +9,7 @@
     t.window.title = "Minerman"         -- The window title (string)
     t.window.icon = nil                 -- Filepath to an image to use as the window's icon (string)
     t.window.width = 405               -- The window width (number) -- 786
-    t.window.height = 900 	        -- The window height (number) -- 1366
+    t.window.height = 720 	        -- The window height (number) -- 1366
     t.window.borderless = false         -- Remove all border visuals from the window (boolean)
     t.window.resizable = false          -- Let the window be user-resizable (boolean)
     t.window.minwidth = 1               -- Minimum window width if the window is resizable (number)
