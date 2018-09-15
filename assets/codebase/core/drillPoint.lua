@@ -25,7 +25,7 @@ function drillPoint:update(dt)
 end
 
 function drillPoint:draw()
-	love.graphics.setFont(game.fonts["text"])
+	game:fontSize(17)
 	love.graphics.setColor(1,1,1, self.alpha)
 	love.graphics.print(self.text, self.x, self.y)
 end

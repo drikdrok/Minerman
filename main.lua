@@ -5,7 +5,7 @@
 require("assets/codebase/core/require")
 
 
-version = "v 1.1.0"
+version = "v 1.1.1"
 
  function love.load()
 	love.graphics.setDefaultFilter("nearest", "nearest")
@@ -42,7 +42,6 @@ version = "v 1.1.0"
         end
     end
 
-
 	if game.music then 
 		soundtrack:play()
 	end
@@ -67,7 +66,7 @@ function love.draw()
 			love.graphics.draw(gameCanvas, 0, 0, 0, gameCanvasScaleX, gameCanvasScaleY)
 		end
 	end
-
+	
 	if debug then 
 		love.graphics.print(love.timer.getFPS())
 	end
@@ -109,6 +108,7 @@ function love.focus(f)
 		end
 	end
 end
+
 
 function love.resize(w, h)
 	gameCanvasScaleX = w / 405

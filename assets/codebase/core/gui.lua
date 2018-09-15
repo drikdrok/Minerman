@@ -1,7 +1,7 @@
 function createGUI() -- All gooi buttons go here
 
 	imageButtonStyle = {
-        font = game.fonts["button"],
+        font = game:fontSize(17),
         radius = 5,
         innerRadius = 3,
         showBorder = true,
@@ -9,7 +9,7 @@ function createGUI() -- All gooi buttons go here
     }
 
     textButtonStyle = {
-        font = game.fonts["button"],
+        font = game:fontSize(17),
         radius = 5,
         innerRadius = 3,
         showBorder = true,
@@ -24,7 +24,7 @@ function createGUI() -- All gooi buttons go here
     gooi.shadow()
 
 
-	pauseButton = gooi.newButton({text = "", x = 3, y = 3, icon = "assets/gfx/icons/pausebutton.png", w = 49, h = 49, visible = false} -- Pause button
+	pauseButton = gooi.newButton({text = "", x = 3, y = 3 + game.notchOffset, icon = "assets/gfx/icons/pausebutton.png", w = 49, h = 49, visible = false} -- Pause button
 		):onRelease(function()
             game.state = "paused"
 
@@ -77,7 +77,7 @@ function createGUI() -- All gooi buttons go here
         end):setGroup("avatarPicker") 
 
 	
-    avatarButton = gooi.newButton({text = "", x = game.width - 64 - 4, y = 4, icon = "assets/gfx/icons/avatarButton.png", w = 64, h = 64, visible = true} -- Avatar button
+    avatarButton = gooi.newButton({text = "", x = game.width - 64 - 4, y = 4 + game.notchOffset, icon = "assets/gfx/icons/avatarButton.png", w = 64, h = 64, visible = true} -- Avatar button
 		):onRelease(function()
             avatarPicker.visible = true
             avatarPickerLeft:setVisible(true)
@@ -111,7 +111,7 @@ function createGUI() -- All gooi buttons go here
 
     --Settings
 
-     settingsButton = gooi.newButton({text = "", x = game.width - 128 - 8, y = 4, icon = "assets/gfx/icons/settingsButton.png", w = 64, h = 64, visible = true} -- Avatar button
+     settingsButton = gooi.newButton({text = "", x = game.width - 128 - 8, y = 4 + game.notchOffset, icon = "assets/gfx/icons/settingsButton.png", w = 64, h = 64, visible = true} -- Avatar button
         ):onRelease(function()
             game.state = "settingsPanel"
 
@@ -131,7 +131,7 @@ function createGUI() -- All gooi buttons go here
             end
         end):setGroup("settingsPanel")
 
-    resetScoreButton = gooi.newButton({text = "", x = settingsPanel.x + settingsPanel.width / 2 - 248/2, y = settingsPanel.y + 70, icon = "assets/gfx/icons/resetHighscore.png", w = 248, h = 32, visible = false} -- Avatar button
+    resetScoreButton = gooi.newButton({text = "", x = settingsPanel.x + settingsPanel.width / 2 - 248/2, y = settingsPanel.y + 60, icon = "assets/gfx/icons/resetHighscore.png", w = 248, h = 32, visible = false} -- Avatar button
         ):onRelease(function()
             player.highscore = 0
             player:setAvatar(avatarPicker.avatars[1].sheet)
@@ -143,7 +143,7 @@ function createGUI() -- All gooi buttons go here
 
         end):setGroup("settingsPanel")
 
-    sfxButton = gooi.newButton({text = "", x = settingsPanel.x + settingsPanel.width / 2 - 76/2, y = settingsPanel.y + settingsPanel.height - 76 - 30, icon = "assets/gfx/icons/sfxButton.png", w = 76, h = 76, visible = false} -- Avatar button
+    sfxButton = gooi.newButton({text = "", x = settingsPanel.x + settingsPanel.width / 2 - 76/2, y = settingsPanel.y + settingsPanel.height - 76 - 55, icon = "assets/gfx/icons/sfxButton.png", w = 76, h = 76, visible = false} -- Avatar button
         ):onRelease(function()
             game.sfx = not game.sfx
 
@@ -152,7 +152,7 @@ function createGUI() -- All gooi buttons go here
         end
     end):setGroup("settingsPanel")
 
-    arrowButton = gooi.newButton({text = "", x = settingsPanel.x + 25, y = settingsPanel.y + settingsPanel.height - 76*2 - 40, icon = "assets/gfx/icons/arrowButton.png", w = 76, h = 76, visible = false} -- Avatar button
+    arrowButton = gooi.newButton({text = "", x = settingsPanel.x + 25, y = settingsPanel.y + settingsPanel.height - 76*2 - 85, icon = "assets/gfx/icons/arrowButton.png", w = 76, h = 76, visible = false} -- Avatar button
         ):onRelease(function()
             game.arrowHelp = not game.arrowHelp
 
@@ -162,24 +162,51 @@ function createGUI() -- All gooi buttons go here
     end):setGroup("settingsPanel")
 
 
-    stretchButton = gooi.newButton({text = "", x = settingsPanel.x + settingsPanel.width / 2 - 76/2, y = settingsPanel.y + settingsPanel.height - 76*2 - 40, icon = "assets/gfx/icons/stretchButton.png", w = 76, h = 76, visible = false} -- Stretch button
-        ):onRelease(function()
-            game.stretch = not game.stretch
+    if os ~= "iOS" then -- Strech option is disabled on iOS
+        stretchButton = gooi.newButton({text = "", x = settingsPanel.x + settingsPanel.width - 76 - 25, y = settingsPanel.y + settingsPanel.height - 76*2 - 85, icon = "assets/gfx/icons/stretchButton.png", w = 76, h = 76, visible = false} -- Stretch button
+            ):onRelease(function()
+                game.stretch = not game.stretch
 
 
-            if game.stretch then 
-                gameCanvas = love.graphics.newCanvas(405, 720)
-                gooi.setCanvas(gameCanvas)
-
-                game.actualHeight = game.height
-            else
-                if math.floor(love.graphics.getHeight() / 720) >= 1 then 
-                    gameCanvas = love.graphics.newCanvas()
+                if game.stretch then 
+                    gameCanvas = love.graphics.newCanvas(405, 720)
                     gooi.setCanvas(gameCanvas)
 
-                    game.actualHeight = love.graphics.getHeight()
+                    game.actualHeight = game.height
+                else
+                    if math.floor(love.graphics.getHeight() / 720) >= 1 then 
+                        gameCanvas = love.graphics.newCanvas()
+                        gooi.setCanvas(gameCanvas)
+
+                        game.actualHeight = love.graphics.getHeight()
+                    end
                 end
+
+            if game.sfx then
+                love.audio.play(buttonEffect)
             end
+        end):setGroup("settingsPanel")
+    end
+
+    
+    notchButton = gooi.newButton({text = "", x = settingsPanel.x + settingsPanel.width / 2 - 76/2, y = settingsPanel.y + settingsPanel.height - 76*2 - 85, icon = "assets/gfx/icons/notchButton.png", w = 76, h = 76, visible = false} -- Stretch button
+            ):onRelease(function()
+
+        game.notch = not game.notch
+
+
+        if game.notch then 
+            game.notchOffset = 25
+        else
+            game.notchOffset = 0
+        end 
+
+        avatarButton.y = 4 + game.notchOffset
+        settingsButton.y = 4 + game.notchOffset
+        pauseButton.y = 3 + game.notchOffset
+
+
+
 
         if game.sfx then
             love.audio.play(buttonEffect)
@@ -188,7 +215,7 @@ function createGUI() -- All gooi buttons go here
 
 
 
-    musicButton = gooi.newButton({text = "", x = settingsPanel.x + 25, y = settingsPanel.y + settingsPanel.height - 76 - 30, icon = "assets/gfx/icons/musicButton.png", w = 76, h = 76, visible = false} -- Avatar button
+    musicButton = gooi.newButton({text = "", x = settingsPanel.x + 25, y = settingsPanel.y + settingsPanel.height - 76 - 55, icon = "assets/gfx/icons/musicButton.png", w = 76, h = 76, visible = false} -- Avatar button
         ):onRelease(function()
 
         if game.music then 
@@ -205,7 +232,7 @@ function createGUI() -- All gooi buttons go here
         end
     end):setGroup("settingsPanel")
 
-    vibrationButton = gooi.newButton({text = "", x = settingsPanel.x + settingsPanel.width - 76 - 25, y = settingsPanel.y + settingsPanel.height - 76 - 30, icon = "assets/gfx/icons/vibrationButton.png", w = 77, h = 77, visible = false} -- Avatar button
+    vibrationButton = gooi.newButton({text = "", x = settingsPanel.x + settingsPanel.width - 76 - 25, y = settingsPanel.y + settingsPanel.height - 76 - 55, icon = "assets/gfx/icons/vibrationButton.png", w = 77, h = 77, visible = false} -- Avatar button
         ):onRelease(function()
             game.vibration = not game.vibration
 
@@ -255,7 +282,10 @@ function updateGUI()
         musicButton:setVisible(true)
         vibrationButton:setVisible(true)
         arrowButton:setVisible(true)
-        stretchButton:setVisible(true)
+        if os ~= "iOS" then 
+            stretchButton:setVisible(true)
+        end
+        notchButton:setVisible(true)
     else
         exitSettingsPanel:setVisible(false)
         resetScoreButton:setVisible(false)
@@ -263,6 +293,9 @@ function updateGUI()
         musicButton:setVisible(false)
         vibrationButton:setVisible(false)
         arrowButton:setVisible(false)
-        stretchButton:setVisible(false)
+        if os ~= "iOS" then 
+            stretchButton:setVisible(false)
+        end
+        notchButton:setVisible(false)
     end 
 end 

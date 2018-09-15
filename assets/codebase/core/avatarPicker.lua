@@ -79,7 +79,7 @@ function avatarPicker:draw()
 
 	love.graphics.draw(self.image, self.x, self.y, 0)
 
-	love.graphics.setFont(game.fonts["score"])
+	game:fontSize(17)
 
 	local x = self.x + self.width/2 - (16*10.1)/2
 	local y = self.y + self.height/6
@@ -91,8 +91,8 @@ function avatarPicker:draw()
 		love.graphics.setColor(50/255, 50/255, 50/255,  150/255)
 		love.graphics.rectangle("fill", self.x + 10, y - 25, self.width - 20, 16*10+ 84)
 
-		local x = self.x + self.width / 2 - game.fonts["score"]:getWidth("Unlocks at: "..self.highlightedAvatar.unlocksAt) / 2
-		local y = self.y + self.height/6 + 16*5 + game.fonts["score"]:getHeight("Unlocks at: "..self.highlightedAvatar.unlocksAt) / 2	
+		local x = self.x + self.width / 2 - game.font:getWidth("Unlocks at: "..self.highlightedAvatar.unlocksAt) / 2
+		local y = self.y + self.height/6 + 16*5 + game.font:getHeight("Unlocks at: "..self.highlightedAvatar.unlocksAt) / 2	
 		love.graphics.setColor(255,0,0,200)
 		love.graphics.print("Unlocks at: "..self.highlightedAvatar.unlocksAt, x,y )
 		love.graphics.setColor(255,255,255) 
@@ -103,17 +103,17 @@ function avatarPicker:draw()
 	local y = 380
 	love.graphics.line(self.x + 11, y, 359, y)
 
-	love.graphics.setFont(game.fonts["text"])
-	local x = self.x + self.width / 2 - game.fonts["text"]:getWidth(self.highlightedAvatar.desc) / 2
+	game:fontSize(17)
+	local x = self.x + self.width / 2 - game.font:getWidth(self.highlightedAvatar.desc) / 2
 	love.graphics.print(self.highlightedAvatar.desc, x, 420)
 
 	love.graphics.setColor(255,255,255)
 	-- The score font's size fits nicely
-	love.graphics.setFont(game.fonts["score"])
-	local x = self.x + self.width/2 - game.fonts["score"]:getWidth(self.highlightedAvatar.name) / 2 + 5 
+	game:fontSize(21)
+	local x = self.x + self.width/2 - game.font:getWidth(self.highlightedAvatar.name) / 2 + 5 
 	love.graphics.print(self.highlightedAvatar.name, x, self.height/6 + (16*10) + 75)
 
-	local x = self.x + self.width/2 - game.fonts["score"]:getWidth(self.highlightedAvatar.position.."/"..#self.avatars) / 2 
+	local x = self.x + self.width/2 - game.font:getWidth(self.highlightedAvatar.position.."/"..#self.avatars) / 2 
 	love.graphics.print(self.highlightedAvatar.position.."/"..#self.avatars, x, self.y+20)
 
 

@@ -21,12 +21,12 @@ end
 function deathscreen:draw()
 	love.graphics.draw(redOverlay, 0, 0, 0, 5, 5) --The scaling is not optimal, whatever
 
-	love.graphics.setFont(game.fonts["hud"])
+	game:fontSize(30)
 	love.graphics.print("YOU DIED!", findMiddle("YOU DIED!", "hud"), game.height/6)
-	love.graphics.setFont(game.fonts["deathScore"])
+	game:fontSize(20)
 	love.graphics.print("Score: "..math.floor(player.score), findMiddle("Score: "..math.floor(player.score), "deathScore"), game.height/4.5)
 
-	love.graphics.setFont(game.fonts["button"])
+	game:fontSize(17)
 	gooi.draw("deathscreen")
 end
 

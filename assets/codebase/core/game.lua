@@ -18,7 +18,7 @@ function game:initialize()
 
 	self.actualHeight = self.height -- I have no idea what to call this other than actualHeight?
 
-	local os = love.system.getOS()
+	os = love.system.getOS()
 	platform = "pc"
 	self.menuMessage = "Press space to "
 	if os == "Android" or os == "iOS"then
@@ -30,19 +30,14 @@ function game:initialize()
 
 	self.state = "menu"
 
-	self.fonts = {
-		title = love.graphics.newFont("assets/gfx/fonts/pixelmix.ttf", math.floor(self.width/9)),
-		text = love.graphics.newFont("assets/gfx/fonts/pixelmix.ttf", math.floor(self.width/25)),
-		score = love.graphics.newFont("assets/gfx/fonts/pixelmix.ttf", math.floor(self.width/17)),
-		debug = love.graphics.newFont("assets/gfx/fonts/pixelmix.ttf", math.floor(self.width/31)),
-		hud = love.graphics.newFont("assets/gfx/fonts/pixelmix.ttf", math.floor(self.width/16)),
-		button = love.graphics.newFont("assets/gfx/fonts/pixelmix.ttf", math.floor(self.width/17)),
-		death = love.graphics.newFont("assets/gfx/fonts/pixelmix.ttf", math.floor(self.width/13)),
-		deathScore = love.graphics.newFont("assets/gfx/fonts/pixelmix.ttf", math.floor(self.width/20)), --Lmao i should replace this font system what was i thinking
-	}
+	self.fonts = {}
+	self.font = love.graphics.newFont("assets/gfx/fonts/pixelmix.ttf", 12)
+	love.graphics.setFont(self.font)
+
 
 	self.titleY = -100
 	self.titleMayScroll = true
+
 
 
 	self.sfx = false
@@ -50,6 +45,7 @@ function game:initialize()
 	self.vibration = false 
 	self.arrowHelp = false
 	self.stretch = false
+	self.notch = false
 
 	self.textTimer = 5
 	local data = self:getSave()
@@ -70,13 +66,25 @@ function game:initialize()
 
 	if data["stretch"] then 
 		self.stretch = data["stretch"]
-
 	end
+
+	if data["notch"] then 
+		self.notch = data["notch"]
+	end
+
 	if self.stretch then 
 		self.actualHeight = self.height
 	else
 		self.actualHeight = love.graphics.getHeight()
 	end
+
+	if self.notch then 
+		self.notchOffset = 25
+	else
+		self.notchOffset = 0
+	end 
+
+
 
 	love.graphics.setLineWidth(3)
 
@@ -124,12 +132,23 @@ function game:update(dt)
 		self.textTimer = self.textTimer - dt
 
 
-	elseif self.state == "menu" or self.state == "settingsPanel" then 
-		if self.titleY < self.height/9 then 
+	elseif self.state == "menu" then 
+		if self.titleY < self.height/9 + self.notchOffset then 
 			self.titleY = self.titleY + 170*dt
 		elseif self.titleY > self.height/9 then 
-			self.titleY = self.height/9
+			self.titleY = self.height/9 + self.notchOffset
 		end
+	elseif self.state == "settingsPanel" then
+		if self.titleY < self.height/9  then 
+			self.titleY = self.titleY + 170*dt
+		elseif self.titleY > self.height/9 then 
+			self.titleY = self.titleY - 170*dt
+		end
+
+		if self.titleY < self.height / 9 + 2 and self.titleY > self.height / 9 - 2 then
+			self.titleY = self.height / 9
+		end
+
 	end
 end
 
@@ -147,7 +166,7 @@ function game:draw()
 
 		--HUD / GUI
 		love.graphics.setColor(255,255,255)
-		love.graphics.setFont(self.fonts["score"])
+		self:fontSize(22)
 		love.graphics.print(math.floor(player.score), findMiddle(math.floor(player.score), "score"), self.height/7)
 		if player.powerup.kind ~= "empty" then --Powerup timer
 			local p = player.powerup
@@ -156,9 +175,9 @@ function game:draw()
 			
 			love.graphics.draw(p.image, imgX, 10, 0, p.scale, p.scale)
 			
-			love.graphics.setFont(self.fonts["text"])
+			self:fontSize(17)
 			
-			local x = math.ceil(imgX + p.image:getWidth()*p.scale/2 - (self.fonts["text"]:getWidth(p.lifetime - math.floor(p.age)) / 2))
+			local x = math.ceil(imgX + p.image:getWidth()*p.scale/2 - (self.font:getWidth(p.lifetime - math.floor(p.age)) / 2))
 			love.graphics.print(p.lifetime - math.floor(p.age), x, p.image:getHeight()*p.scale + 15)
 		end
 
@@ -168,7 +187,7 @@ function game:draw()
 			love.graphics.setColor(1, 1, 1, 0.75)
 			love.graphics.draw(arrowLeftImage, 10, self.actualHeight-130, 0, 7, 7)
 			love.graphics.draw(arrowRightImage, game.width-10-(arrowRightImage:getWidth()*7), self.actualHeight-130, 0, 7, 7)
-			love.graphics.setFont(self.fonts["text"])
+			self:fontSize(17)
 			love.graphics.setColor(1,1,1, self.textTimer)
 			love.graphics.print("Tap & hold to move", findMiddle("Tap & hold to move", "text"), self.actualHeight-self.actualHeight/20)
 		end
@@ -190,18 +209,18 @@ function game:draw()
 
 			love.graphics.draw(p.image, self.width-p.image:getWidth()*p.scale-5*p.scale, 10, 0, p.scale, p.scale)
 			
-			love.graphics.setFont(self.fonts["text"])
+			self:fontSize(17)
 			
-			local x = (self.width-p.image:getWidth()*p.scale-5*p.scale) + ((p.image:getWidth()*p.scale-5*p.scale)/2) + (self.fonts["text"]:getWidth(p.lifetime - math.floor(p.age))/6)  -- There must be a shorter way to find an x coord
+			local x = (self.width-p.image:getWidth()*p.scale-5*p.scale) + ((p.image:getWidth()*p.scale-5*p.scale)/2) + (self.font:getWidth(p.lifetime - math.floor(p.age))/6)  -- There must be a shorter way to find an x coord
 			love.graphics.print(p.lifetime - math.floor(p.age), x, p.image:getHeight()*p.scale + 15)
 		end
 
 		love.graphics.draw(darkOverlay, 0, 0, 0, 10, 10) --Scaling is very bad I know I just wanna release the game gimme a break
 
-		love.graphics.setFont(self.fonts["score"])
+		self:fontSize(23)
 		love.graphics.print("Paused", findMiddle("paused", "score"), self.height/7)
 
-		love.graphics.setFont(self.fonts["text"])
+		self:fontSize(17)
 		love.graphics.print(self.menuMessage.."resume!", findMiddle(self.menuMessage.."resume!","text"), self.actualHeight-self.actualHeight/20)
 
 	
@@ -209,9 +228,9 @@ function game:draw()
 		love.graphics.setColor(255,255,255)
 		love.graphics.draw(titleImage, game.width/2 - (titleImage:getWidth()/2*(2.5)), self.titleY, 0, 2.5, 2.5)
 
-		love.graphics.setFont(self.fonts["text"])
+		self:fontSize(17)
 		love.graphics.print(self.menuMessage.."start!", findMiddle(self.menuMessage.."start!","text"), self.actualHeight-self.actualHeight/20)
-		love.graphics.print("Highscore: "..player.highscore, 10, 10)
+		love.graphics.print("Highscore: "..player.highscore, 10, 10 + self.notchOffset)
 
 		--gooi.setStyle(textButtonStyle) --Might be needed!
 		gooi.draw("menu")
@@ -219,8 +238,8 @@ function game:draw()
 	elseif self.state == "avatarPicker" then 
 
 		love.graphics.setColor(255,255,255)
-		love.graphics.setFont(self.fonts["text"])
-		love.graphics.print("Highscore: "..player.highscore, 10, 10)
+		self:fontSize(17)
+		love.graphics.print("Highscore: "..player.highscore, 10, 10 + self.notchOffset)
 		love.graphics.print("Choose an avatar!", findMiddle("Choose an avatar!","text"), self.actualHeight-self.actualHeight/20)
 
 		avatarPicker:draw()
@@ -228,9 +247,9 @@ function game:draw()
 		love.graphics.setColor(255,255,255)
 		love.graphics.draw(titleImage, game.width/2 - (titleImage:getWidth()/2*2.5), self.titleY, 0, 2.5, 2.5)
 
-		love.graphics.setFont(self.fonts["text"])
+		self:fontSize(17)
 		love.graphics.print("Settings", findMiddle("Settings","text"), self.actualHeight-self.actualHeight/20)
-		love.graphics.print("Highscore: "..player.highscore, 10, 10)
+		love.graphics.print("Highscore: "..player.highscore, 10, 10 + self.notchOffset)
 		
 
 		settingsPanel:draw()
@@ -317,7 +336,7 @@ function game:writeSave()
 	end
 	love.filesystem.newFile("save.lua")
 
-	love.filesystem.write("save.lua", "return {highscore = "..player.highscore.. ", sfx = "..tostring(self.sfx)..", music = "..tostring(self.music)..",  vibration = "..tostring(self.vibration)..", avatar = "..avatarPicker.highlightedAvatar.position..", arrows = "..tostring(self.arrowHelp)..", stretch = "..tostring(self.stretch).."}")
+	love.filesystem.write("save.lua", "return {highscore = "..player.highscore.. ", sfx = "..tostring(self.sfx)..", music = "..tostring(self.music)..",  vibration = "..tostring(self.vibration)..", avatar = "..avatarPicker.highlightedAvatar.position..", arrows = "..tostring(self.arrowHelp)..", stretch = "..tostring(self.stretch)..", notch = "..tostring(self.notch).."}")
 end
 
 function game:getSave()
@@ -325,17 +344,28 @@ function game:getSave()
 
 		local data = love.filesystem.load("save.lua")
 		data = data()
-		if data["highscore"] ~= nil and data["sfx"] ~= nil and data["vibration"] ~= nil and data["avatar"] ~= nil and data["arrows"] ~= nil and data["stretch"] ~= nil then 
+		if data["highscore"] ~= nil and data["sfx"] ~= nil and data["vibration"] ~= nil and data["avatar"] ~= nil and data["arrows"] ~= nil and data["stretch"] ~= nil and data["notch"] ~= nil then 
 			return data
 		else
-			return {highscore = 0, sfx = true, music = true, vibration = true, avatar = 1, arrows = true, stretch = true}
+			return {highscore = 0, sfx = true, music = true, vibration = true, avatar = 1, arrows = true, stretch = true, notch = false}
 		end 
 	else
 		love.filesystem.newFile("save.lua")
-		return {highscore = 0, sfx = true, music = true, vibration = true, avatar = 1, arrows = true, stretch = true}
+		return {highscore = 0, sfx = true, music = true, vibration = true, avatar = 1, arrows = true, stretch = true, notch = false}
 	end	
 end
 
+function game:fontSize(size)
+	if not self.fonts[size] then
+		self.fonts[size] = love.graphics.newFont("assets/gfx/fonts/pixelmix.ttf", size)
+	end
+	self.font = self.fonts[size]
+	love.graphics.setFont(self.font)
+
+	return self.font
+end
+
+
 function findMiddle(text, font) -- returns x coordinate for text to be in middle
-	return math.floor(game.width/2-game.fonts[font]:getWidth(text)/2)
+	return math.floor(game.width/2-game.font:getWidth(text)/2)
 end
