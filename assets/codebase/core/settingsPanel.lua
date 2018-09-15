@@ -45,10 +45,13 @@ function settingsPanel:draw()
 	end
 	love.graphics.print("Notch", settingsPanel.x + settingsPanel.width / 2 - 76/2 - 17 + (game.font:getWidth("Notch")/2) + 2, settingsPanel.y + settingsPanel.height - 76*2)
 
-	if not game.stretch and os ~= "iOS" then 
+	if not game.stretch then 
 		love.graphics.draw(crossImage, settingsPanel.x + settingsPanel.width - 76 - 25, settingsPanel.y + settingsPanel.height - 76*2 - 85, 0, 76/32, 76/32)
 	end 
-	love.graphics.print("Stretch", settingsPanel.x + settingsPanel.width - 76 + 14 - (game.font:getWidth("Stretch")/2), settingsPanel.y + settingsPanel.height - 76*2)
+
+	if  os ~= "iOS" then 
+		love.graphics.print("Stretch", settingsPanel.x + settingsPanel.width - 76 + 14 - (game.font:getWidth("Stretch")/2), settingsPanel.y + settingsPanel.height - 76*2)
+	end
 
 
 

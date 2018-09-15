@@ -173,12 +173,12 @@ function game:draw()
 
 			local imgX = self.width-p.image:getWidth()*p.scale-10
 			
-			love.graphics.draw(p.image, imgX, 10, 0, p.scale, p.scale)
+			love.graphics.draw(p.image, imgX, 10 + self.notchOffset, 0, p.scale, p.scale)
 			
 			self:fontSize(17)
 			
 			local x = math.ceil(imgX + p.image:getWidth()*p.scale/2 - (self.font:getWidth(p.lifetime - math.floor(p.age)) / 2))
-			love.graphics.print(p.lifetime - math.floor(p.age), x, p.image:getHeight()*p.scale + 15)
+			love.graphics.print(p.lifetime - math.floor(p.age), x, p.image:getHeight()*p.scale + 15 + self.notchOffset)
 		end
 
 		--Arrow Overlay
