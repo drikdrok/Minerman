@@ -14,6 +14,10 @@ function stage:initialize()
 		love.graphics.newImage("assets/gfx/grounds/hellGround.png"),
 	}
 
+	self.caveCrackImage = love.graphics.newImage("assets/gfx/grounds/caveCracks.png")
+	self.caveCrackGrid = anim8.newGrid(102, 70, self.caveCrackImage:getWidth(), self.caveCrackImage:getHeight())
+	self.caveCrackAnimation = anim8.newAnimation(self.caveCrackGrid("1-10", 1), 3)
+
 	self.layer = 1
 	self.backgroundImage = self.backgrounds[1]
 	self.sky = verticalGradient(game.width, game.height, {117/255, 172/255, 198/255}, {178/255, 220/255, 243/255})
@@ -21,7 +25,7 @@ function stage:initialize()
 	self.transitionTimer = 0
 	self.transitioning = false
 	self.transitionBackgroundImage = self.backgroundImage
-	self.caveTime = math.random(95, 130)
+	self.caveTime = math.random(90, 130)
 	self.hellTime = math.random(350, 400)
 
 	self.backgroundImageY = 0
@@ -55,6 +59,18 @@ function stage:update(dt)
 			self.transitionBackgroundImageY = game.height
 		end 
 	end 
+
+	if self.state == "cave" then 
+		self.caveCrackAnimation:update(dt)
+	end
+
+	if avatarPicker.highlightedAvatar.position == 15 then 
+		self:startInHell()
+	end
+
+	if player.score > self.hellTime then 
+		player.scoreSpeed = 6
+	end
 end
 
 function stage:draw()
@@ -63,10 +79,13 @@ function stage:draw()
 	cloud:draw()
 	love.graphics.draw(self.backgroundImage, 0, self.backgroundImageY, 0, 4, 4)
 	love.graphics.draw(self.transitionBackgroundImage, 0, self.transitionBackgroundImageY, 0, 4, 4)
-	
+
 
 	love.graphics.setColor(255,255,255)
 	love.graphics.draw(self.groundImage, 0, self.groundY, 0, 4, 4)
+	if self.state == "cave" then 
+		self.caveCrackAnimation:draw(self.caveCrackImage, 0, self.groundY, 0, 4, 4)
+	end
 end
 
 function stage:startTransition()
@@ -80,10 +99,6 @@ function stage:startTransition()
 	
 
 	self.layer = self.layer + 1
-
-	if self.layer == 3 then 
-		player.scoreSpeed = 6
-	end
 
 	if self.state == "ground" then 
 		self.state = "cave"
@@ -102,7 +117,6 @@ end
 function stage:reset()
 	self.layer = 1
 	self.backgroundImage = self.backgrounds[1]
-	self.groundColor = {9, 178, 7}
 
 	self.transitionTimer = 0
 	self.transitioning = false
@@ -114,10 +128,12 @@ function stage:reset()
 	self.groundY = player.y+player.height
 	self.groundImage = self.grounds[1]
 
-	self.caveTime = math.random(95, 130)
+	self.caveTime = math.random(90, 130)
 	self.hellTime = math.random(350, 400)
 
 	self.state = "ground"
+
+	self.caveCrackAnimation = anim8.newAnimation(self.caveCrackGrid("1-10", 1), ((self.hellTime - self.caveTime) / player.scoreSpeed) / 10)
 
 	self.backgrounds[2] = self:decideCave()
 end
@@ -126,4 +142,13 @@ function stage:decideCave()
 	local n = math.random(1,2)
 
 	return love.graphics.newImage("assets/gfx/backgrounds/cave"..tostring(n)..".png")
+end
+
+function stage:startInHell()
+	self.state = "hell"
+	self.backgroundImage = self.backgrounds[3]
+	self.layer = 3
+
+	self.groundY = player.y+player.height
+	self.groundImage = self.grounds[3]
 end

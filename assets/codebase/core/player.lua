@@ -16,10 +16,11 @@ function player:initialize()
 
 	self.speed = 260*game.scale
 	self.speedboost = 0
-
 	self.score = 0
 	self.scoreSpeed = 3
-	self.highscore = game:getSave()["highscore"]
+	self.highscore = data["highscore"]
+
+	self.coins = data["coins"]
 
 	self.grid = anim8.newGrid(16,16,self.sheet:getWidth(), self.sheet:getHeight()) -- Animation grid
 	
@@ -32,6 +33,9 @@ function player:initialize()
 	self.type = "player"
 
 	self.direction = 1
+
+	self.drillBuff = data["drillBuff"]
+	self.speedBuff = data["speedBuff"] 
 
 
 	world:add(self, self.x, self.y, self.width, self.height)
@@ -107,6 +111,10 @@ function player:update(dt)
 				else
 					self:die()
 				end
+			elseif v.other.type == "coin" then 
+				self.coins = self.coins + 1
+				world:remove(v.other)
+				coins[v.other.id] = nil
 			end
 		end
 	end 
@@ -115,8 +123,9 @@ function player:update(dt)
 
 
 	if self.score <= 320 then  --Player doesn't keep getting faster after 320
-		self.speed = (240+(self.score*0.40*boulderSpeed))+ self.speedboost*game.scale
+		self.speed = (240+(self.score*0.40*boulderSpeed))
 	end
+	self.speed = self.speed + self.speedboost*game.scale
 end
 
 function player:draw()

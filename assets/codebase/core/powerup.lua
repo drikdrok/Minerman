@@ -45,9 +45,9 @@ function powerup:initialize(kind, x, y, lifetime)
 
 	self.age = 0
 	if self.kind == 2 then 
-		self.lifetime = 10
+		self.lifetime = 10 + player.speedBuff
 	else
-		self.lifetime = 8
+		self.lifetime = 8 + player.drillBuff
 	end 
 
 	self.type = "powerup" 

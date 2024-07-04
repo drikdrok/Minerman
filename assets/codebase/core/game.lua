@@ -84,6 +84,9 @@ function game:initialize()
 		self.notchOffset = 0
 	end 
 
+	self.pauseTimer = 0
+	self.pauseCountdown = false
+
 
 
 	love.graphics.setLineWidth(3)
@@ -99,12 +102,14 @@ function game:update(dt)
 	cloud:update(dt)
 	if self.state == "playing" then 
 		player:update(dt)
-		player.score = player.score+dt*player.scoreSpeed
+		player.score = player.score + dt * player.scoreSpeed
+		trail:update(dt)
 
 		updateBoulders(dt)
 		updateParticles(dt)
 		updatePowerups(dt)
 		updateDrillPoints(dt)
+		updateCoins(dt)
 
 		self.stage:update(dt)
 
@@ -138,7 +143,11 @@ function game:update(dt)
 		elseif self.titleY > self.height/9 then 
 			self.titleY = self.height/9 + self.notchOffset
 		end
-	elseif self.state == "settingsPanel" then
+	
+		if avatarPicker.highlightedAvatar.position == 15 then 
+			self.stage:startInHell()
+		end
+	elseif self.state == "settingsPanel" or self.state == "shopPanel" then
 		if self.titleY < self.height/9  then 
 			self.titleY = self.titleY + 170*dt
 		elseif self.titleY > self.height/9 then 
@@ -148,7 +157,14 @@ function game:update(dt)
 		if self.titleY < self.height / 9 + 2 and self.titleY > self.height / 9 - 2 then
 			self.titleY = self.height / 9
 		end
-
+	elseif self.state == "paused" then 
+		if self.pauseCountdown then 
+			self.pauseTimer = self.pauseTimer - dt
+			if self.pauseTimer <= 0 then 
+				self.state = "playing"
+				self.pauseCountdown = false
+			end
+		end
 	end
 end
 
@@ -158,11 +174,13 @@ function game:draw()
 
 	-- Drawing everything in this huge if statement, is horrible. The game grew bigger than I first expected.	
 	if self.state == "playing" then 
+		trail:draw()
 		player:draw()
 		drawBoulders()
 		drawParticles()
 		drawPowerups()
 		drawDrillPoints()
+		drawCoins()
 
 		--HUD / GUI
 		love.graphics.setColor(255,255,255)
@@ -189,7 +207,11 @@ function game:draw()
 			love.graphics.draw(arrowRightImage, game.width-10-(arrowRightImage:getWidth()*7), self.actualHeight-130, 0, 7, 7)
 			self:fontSize(17)
 			love.graphics.setColor(1,1,1, self.textTimer)
-			love.graphics.print("Tap & hold to move", findMiddle("Tap & hold to move", "text"), self.actualHeight-self.actualHeight/20)
+			if os == "mobile" then 
+				love.graphics.print("Tap & hold to move", findMiddle("Tap & hold to move", "text"), self.actualHeight-self.actualHeight/20)
+			else
+				love.graphics.print("Press A & D to move", findMiddle("Press A & D to move", "text"), self.actualHeight-self.actualHeight/20)
+			end
 		end
 
 		love.graphics.setColor(1, 1, 1, 1)
@@ -218,12 +240,16 @@ function game:draw()
 		love.graphics.draw(darkOverlay, 0, 0, 0, 10, 10) --Scaling is very bad I know I just wanna release the game gimme a break
 
 		self:fontSize(23)
-		love.graphics.print("Paused", findMiddle("paused", "score"), self.height/7)
+		if self.pauseCountdown then 
+			love.graphics.print(tostring(math.ceil(self.pauseTimer)), findMiddle(tostring(math.ceil(self.pauseTimer)), "score"), self.height/7)
+		else
+			love.graphics.print("Paused", findMiddle("paused", "score"), self.height/7)
+		end
 
 		self:fontSize(17)
 		love.graphics.print(self.menuMessage.."resume!", findMiddle(self.menuMessage.."resume!","text"), self.actualHeight-self.actualHeight/20)
 
-	
+		
 	elseif self.state == "menu" then 
 		love.graphics.setColor(255,255,255)
 		love.graphics.draw(titleImage, game.width/2 - (titleImage:getWidth()/2*(2.5)), self.titleY, 0, 2.5, 2.5)
@@ -231,7 +257,7 @@ function game:draw()
 		self:fontSize(17)
 		love.graphics.print(self.menuMessage.."start!", findMiddle(self.menuMessage.."start!","text"), self.actualHeight-self.actualHeight/20)
 		love.graphics.print("Highscore: "..player.highscore, 10, 10 + self.notchOffset)
-
+		
 		--gooi.setStyle(textButtonStyle) --Might be needed!
 		gooi.draw("menu")
 
@@ -240,7 +266,7 @@ function game:draw()
 		love.graphics.setColor(255,255,255)
 		self:fontSize(17)
 		love.graphics.print("Highscore: "..player.highscore, 10, 10 + self.notchOffset)
-		love.graphics.print("Choose an avatar!", findMiddle("Choose an avatar!","text"), self.actualHeight-self.actualHeight/20)
+		love.graphics.print("Choose a miner!", findMiddle("Choose a miner!","text"), self.actualHeight-self.actualHeight/20)
 
 		avatarPicker:draw()
 	elseif self.state == "settingsPanel" then 
@@ -251,8 +277,15 @@ function game:draw()
 		love.graphics.print("Settings", findMiddle("Settings","text"), self.actualHeight-self.actualHeight/20)
 		love.graphics.print("Highscore: "..player.highscore, 10, 10 + self.notchOffset)
 		
-
 		settingsPanel:draw()
+	elseif self.state == "shopPanel" then 
+		love.graphics.setColor(255,255,255)
+		love.graphics.draw(titleImage, game.width/2 - (titleImage:getWidth()/2*2.5), self.titleY, 0, 2.5, 2.5)
+
+		love.graphics.print("Miner shop", findMiddle("Miner shop","text"), self.actualHeight-self.actualHeight/20)
+		love.graphics.print("Highscore: "..player.highscore, 10, 10 + self.notchOffset)
+		
+		shopPanel:draw()
 	elseif self.state == "dead" then 
 		deathscreen:draw()
 	end 
@@ -273,8 +306,11 @@ function game:keypressed(key)
 
 	elseif self.state == "paused" then 
 		if key == "space" then 
-			self.state = "playing"
-		end
+			if self.pauseTimer <= 0 then 
+				self.pauseTimer = 3
+				self.pauseCountdown = true
+			end
+ 		end
 	elseif self.state == "avatarPicker" then 
 		avatarPicker:update(key)
 	elseif self.state == "dead" then 
@@ -286,7 +322,7 @@ function game:keypressed(key)
 			self:reset()
 			deathscreen:setVisible(false) 
 		end
-	elseif self.state == "settingsPanel" then 
+	elseif self.state == "settingsPanel" or self.state == "shopPanel" then 
 		if key == "escape" then 
 			self.state = "menu"
 		end
@@ -305,7 +341,10 @@ function game:touchpressed()
 			updateGUI()
 		end 
 	elseif self.state == "paused" then 
-		self.state = "playing"
+		if self.pauseTimer <= 0 then 
+			self.pauseTimer = 3
+			self.pauseCountdown = true
+		end
 	end
 end
 
@@ -322,8 +361,10 @@ function game:reset()
 	boulderInterval = 1.5
 	particles = {}
 	powerups = {}
+	coins = {}
 	drillPoints = {}
-	
+
+	trail:reset()	
 
 	powerup:new()
 
@@ -336,7 +377,7 @@ function game:writeSave()
 	end
 	love.filesystem.newFile("save.lua")
 
-	love.filesystem.write("save.lua", "return {highscore = "..player.highscore.. ", sfx = "..tostring(self.sfx)..", music = "..tostring(self.music)..",  vibration = "..tostring(self.vibration)..", avatar = "..avatarPicker.highlightedAvatar.position..", arrows = "..tostring(self.arrowHelp)..", stretch = "..tostring(self.stretch)..", notch = "..tostring(self.notch).."}")
+	love.filesystem.write("save.lua", "return {highscore = "..player.highscore.. ", sfx = "..tostring(self.sfx)..", music = "..tostring(self.music)..",  vibration = "..tostring(self.vibration)..", avatar = "..avatarPicker.highlightedAvatar.position..", arrows = "..tostring(self.arrowHelp)..", stretch = "..tostring(self.stretch)..", notch = "..tostring(self.notch).. ", drillBuff = "..tostring(player.drillBuff)..", speedBuff = "..tostring(player.speedBuff)..", coins = "..tostring(player.coins).."}")
 end
 
 function game:getSave()
@@ -344,14 +385,14 @@ function game:getSave()
 
 		local data = love.filesystem.load("save.lua")
 		data = data()
-		if data["highscore"] ~= nil and data["sfx"] ~= nil and data["vibration"] ~= nil and data["avatar"] ~= nil and data["arrows"] ~= nil and data["stretch"] ~= nil and data["notch"] ~= nil then 
+		if data["highscore"] ~= nil and data["sfx"] ~= nil and data["vibration"] ~= nil and data["avatar"] ~= nil and data["arrows"] ~= nil and data["stretch"] ~= nil and data["notch"] ~= nil and data["drillBuff"] ~= nil and data["speedBuff"] ~= nil and data["coins"] ~= nil then 
 			return data
 		else
-			return {highscore = 0, sfx = true, music = true, vibration = true, avatar = 1, arrows = true, stretch = true, notch = false}
+			return {highscore = 0, sfx = true, music = true, vibration = true, avatar = 1, arrows = true, stretch = true, notch = false, drillBuff = 0, speedBuff = 0, coins = 0 }
 		end 
 	else
 		love.filesystem.newFile("save.lua")
-		return {highscore = 0, sfx = true, music = true, vibration = true, avatar = 1, arrows = true, stretch = true, notch = false}
+		return {highscore = 0, sfx = true, music = true, vibration = true, avatar = 1, arrows = true, stretch = true, notch = false, drillBuff = 0, speedBuff = 0, coins = 0}
 	end	
 end
 

@@ -3,9 +3,9 @@
 -- So a lot of the code isn't very optimized or elegant
 
 require("assets/codebase/core/require")
+ 
 
-
-version = "v 1.1.1"
+version = "v 1.2.0"
 
  function love.load()
 	love.graphics.setDefaultFilter("nearest", "nearest")
@@ -21,11 +21,13 @@ version = "v 1.1.1"
 	player = player:new()	
 	avatarPicker = avatarPicker:new()
 	settingsPanel = settingsPanel:new()
+	shopPanel = shopPanel:new()
 	createGUI() -- Gooi  
 	powerup:new()
 	game.stage = stage:new() -- We need the game to be initialized before the stage is
 	cloud = cloud:new()
 	deathscreen = deathscreen:new()
+	trail = trail:new()
 
 
 	gameCanvas = love.graphics.newCanvas(405, 720)
@@ -61,7 +63,7 @@ function love.draw()
 		love.graphics.draw(gameCanvas, 0, 0, 0, gameCanvasScaleX, gameCanvasScaleY) -- Scale Everything
 	else
 		if math.floor(love.graphics.getHeight() / 720) >= 1 then 
-			love.graphics.draw(gameCanvas, 0, 0, 0, gameCanvasScaleX, math.floor(love.graphics.getHeight() / 720)) -- Scale in 9:16
+			love.graphics.draw(gameCanvas, 0, 0, 0, gameCanvasScaleX, math.floor(love.graphics.getHeight() / 720)) -- Scale in 16:9
 		else
 			love.graphics.draw(gameCanvas, 0, 0, 0, gameCanvasScaleX, gameCanvasScaleY)
 		end
@@ -69,6 +71,7 @@ function love.draw()
 	
 	if debug then 
 		love.graphics.print(love.timer.getFPS())
+		love.graphics.print(#trail.positions, 0, 15)
 	end
 
 
@@ -142,6 +145,9 @@ function loadImages()
 	arrowRightImage = love.graphics.newImage("assets/gfx/icons/arrowRight2.png")
 
 	crossImage = love.graphics.newImage("assets/gfx/icons/cross.png")
+
+	coinImage = love.graphics.newImage("assets/gfx/images/coin.png")
+
 
 	local w, h = love.graphics.getWidth(), love.graphics.getHeight() -- Dark overlay
 	darkOverlay = love.graphics.newCanvas(w, h)

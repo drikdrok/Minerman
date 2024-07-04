@@ -111,7 +111,7 @@ function createGUI() -- All gooi buttons go here
 
     --Settings
 
-     settingsButton = gooi.newButton({text = "", x = game.width - 128 - 8, y = 4 + game.notchOffset, icon = "assets/gfx/icons/settingsButton.png", w = 64, h = 64, visible = true} -- Avatar button
+     settingsButton = gooi.newButton({text = "", x = game.width - 192 - 8, y = 4 + game.notchOffset, icon = "assets/gfx/icons/settingsButton.png", w = 64, h = 64, visible = true} -- Avatar button
         ):onRelease(function()
             game.state = "settingsPanel"
 
@@ -160,7 +160,6 @@ function createGUI() -- All gooi buttons go here
             love.audio.play(buttonEffect)
         end
     end):setGroup("settingsPanel")
-
 
     if os ~= "iOS" then -- Strech option is disabled on iOS
         stretchButton = gooi.newButton({text = "", x = settingsPanel.x + settingsPanel.width - 76 - 25, y = settingsPanel.y + settingsPanel.height - 76*2 - 85, icon = "assets/gfx/icons/stretchButton.png", w = 76, h = 76, visible = false} -- Stretch button
@@ -241,6 +240,58 @@ function createGUI() -- All gooi buttons go here
             end
         end):setGroup("settingsPanel")
 
+
+    --Shop
+    shopButton = gooi.newButton({text = "", x = game.width - 128 - 8, y = 4 + game.notchOffset, icon = "assets/gfx/icons/bookButton.png", w = 64, h = 64, visible = true} -- Avatar button
+        ):onRelease(function()
+            game.state = "shopPanel"
+
+            if game.sfx then 
+                love.audio.play(buttonEffect)
+            end
+    end):setGroup("menu")
+
+    exitShopPanel = gooi.newButton({text = "", x = shopPanel.width + shopPanel.x - 40 - 4, y = shopPanel.y + 4, icon = "assets/gfx/icons/exitButton.png", w = 40, h = 40, visible = false} -- Avatar button
+        ):onRelease(function()
+
+            game:writeSave()      
+            game.state = "menu"
+
+            if game.sfx then 
+                love.audio.play(buttonEffect)
+            end
+        end):setGroup("shopPanel")
+
+     upgradeDrillButton = gooi.newButton({text = "", x = shopPanel.x + 190, y = shopPanel.y + 100, icon = "assets/gfx/icons/upgradeButton.png", w = 24, h = 32, visible = false} -- Avatar button
+        ):onRelease(function()
+
+            if player.coins >= 2^(player.drillBuff+2) and player.drillBuff < 5 then 
+                player.coins = player.coins - 2^(player.drillBuff+2)
+                player.drillBuff = player.drillBuff + 1 
+            end
+
+            game:writeSave() 
+
+            if game.sfx then 
+                love.audio.play(buttonEffect)
+            end
+        end):setGroup("shopPanel")
+
+    upgradeSpeedButton = gooi.newButton({text = "", x = shopPanel.x + 190, y = shopPanel.y + 150, icon = "assets/gfx/icons/upgradeButton.png", w = 24, h = 32, visible = false} -- Avatar button
+        ):onRelease(function()
+
+            if player.coins >= 2^(player.speedBuff+2) and player.speedBuff < 5 then 
+                player.coins = player.coins - 2^(player.speedBuff+2)
+                player.speedBuff = player.speedBuff + 1 
+            end
+
+            game:writeSave() 
+
+            if game.sfx then 
+                love.audio.play(buttonEffect)
+            end
+        end):setGroup("shopPanel")
+
 end
 
 function updateGUI()
@@ -264,9 +315,11 @@ function updateGUI()
     if game.state == "menu" then 
         avatarButton:setVisible(true)
         settingsButton:setVisible(true)
+        shopButton:setVisible(true)
     else
         avatarButton:setVisible(false)
         settingsButton:setVisible(false)
+        shopButton:setVisible(false)
     end
 
     if game.state == "dead" then 
@@ -297,5 +350,13 @@ function updateGUI()
             stretchButton:setVisible(false)
         end
         notchButton:setVisible(false)
+    end 
+
+    if game.state == "shopPanel" then 
+        exitShopPanel:setVisible(true)
+        upgradeDrillButton:setVisible(true)
+    else
+        exitShopPanel:setVisible(false)
+        upgradeDrillButton:setVisible(false)
     end 
 end 

@@ -10,8 +10,8 @@ local boulderTimer = 0
 local bouldersCanSpawn = true
 
 function boulder:initialize(x, y)
-	self.width = boulderImage:getWidth()* 3
-	self.height = boulderImage:getHeight()*3
+	self.width = boulderImage:getWidth() * 3
+	self.height = boulderImage:getHeight() * 3
 	self.x = x or math.random(1, game.width-self.width)
 	self.y = y or -self.height-math.random(10)
 
@@ -53,7 +53,7 @@ function boulder:update(dt)
 	self.rotation = self.rotation + 3*dt
 	world:update(self, self.x, self.y)
 
-	if self.y > game.height + 100 then 
+	if self.y > game.height + 400 then 
 		self:destroy()
 	end 
 end
@@ -61,15 +61,10 @@ end
 function boulder:draw()
 	love.graphics.draw(self.image, self.x+self.width/2 - 10, self.y+self.height/2, self.rotation*self.direction, self.scale, self.scale, self.width/(2*self.scale), self.height/(2*self.scale))
 
-	if debug then 
-		for i,v in pairs(boulders) do
-			local x,y,w,h = world:getRect(v)
-
-			love.graphics.setColor(255,0,0)
-			love.graphics.rectangle("line",x,y,w,h)
-			love.graphics.setColor(255,255,255)
-
-		end
+	if debug then
+		love.graphics.setColor(1, 0, 0)
+		love.graphics.rectangle("line", self.x, self.y, self.width-15, self.height-10)
+		love.graphics.setColor(1, 1, 1) 
 	end	
 end 
 

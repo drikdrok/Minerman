@@ -3,15 +3,17 @@ cloud = class("cloud")
 function cloud:initialize()
 	self.x = -100
 	self.y = 145
+	self.speed = math.random(10, 30)
 
 	self.image = love.graphics.newImage("assets/gfx/images/cloud.png")
 end
 
 function cloud:update(dt)
-	self.x = self.x + 15*dt
+	self.x = self.x + self.speed*dt
 
 	if self.x > game.width then 
 		self.x = -100
+		self.speed = math.random(10, 30)
 	end
 end
 
