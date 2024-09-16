@@ -1,7 +1,5 @@
 game = class("game")
 
--- WAAY to much stuff.
-
 local buttonPressed = false
 
 function game:initialize()
@@ -64,9 +62,11 @@ function game:initialize()
 		self.arrowHelp = true
 	end
 
+	--[[
 	if data["stretch"] then 
 		self.stretch = data["stretch"]
 	end
+	]]
 
 	if data["notch"] then 
 		self.notch = data["notch"]

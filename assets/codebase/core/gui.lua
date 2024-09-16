@@ -111,7 +111,7 @@ function createGUI() -- All gooi buttons go here
 
     --Settings
 
-     settingsButton = gooi.newButton({text = "", x = game.width - 192 - 8, y = 4 + game.notchOffset, icon = "assets/gfx/icons/settingsButton.png", w = 64, h = 64, visible = true} -- Avatar button
+     settingsButton = gooi.newButton({text = "", x = game.width - 128 - 8, y = 4 + game.notchOffset, icon = "assets/gfx/icons/settingsButton.png", w = 64, h = 64, visible = true} -- Avatar button
         ):onRelease(function()
             game.state = "settingsPanel"
 
@@ -143,7 +143,7 @@ function createGUI() -- All gooi buttons go here
 
         end):setGroup("settingsPanel")
 
-    sfxButton = gooi.newButton({text = "", x = settingsPanel.x + settingsPanel.width / 2 - 76/2, y = settingsPanel.y + settingsPanel.height - 76 - 55, icon = "assets/gfx/icons/sfxButton.png", w = 76, h = 76, visible = false} -- Avatar button
+    sfxButton = gooi.newButton({text = "",x = settingsPanel.x + settingsPanel.width - 76 - 25, y = settingsPanel.y + settingsPanel.height - 76*2 - 85, icon = "assets/gfx/icons/sfxButton.png", w = 76, h = 76, visible = false} -- Avatar button
         ):onRelease(function()
             game.sfx = not game.sfx
 
@@ -161,6 +161,8 @@ function createGUI() -- All gooi buttons go here
         end
     end):setGroup("settingsPanel")
 
+    --Stretch button is just disabled now
+    --[[
     if os ~= "iOS" then -- Strech option is disabled on iOS
         stretchButton = gooi.newButton({text = "", x = settingsPanel.x + settingsPanel.width - 76 - 25, y = settingsPanel.y + settingsPanel.height - 76*2 - 85, icon = "assets/gfx/icons/stretchButton.png", w = 76, h = 76, visible = false} -- Stretch button
             ):onRelease(function()
@@ -186,6 +188,7 @@ function createGUI() -- All gooi buttons go here
             end
         end):setGroup("settingsPanel")
     end
+    ]]
 
     
     notchButton = gooi.newButton({text = "", x = settingsPanel.x + settingsPanel.width / 2 - 76/2, y = settingsPanel.y + settingsPanel.height - 76*2 - 85, icon = "assets/gfx/icons/notchButton.png", w = 76, h = 76, visible = false} -- Stretch button
@@ -231,7 +234,7 @@ function createGUI() -- All gooi buttons go here
         end
     end):setGroup("settingsPanel")
 
-    vibrationButton = gooi.newButton({text = "", x = settingsPanel.x + settingsPanel.width - 76 - 25, y = settingsPanel.y + settingsPanel.height - 76 - 55, icon = "assets/gfx/icons/vibrationButton.png", w = 77, h = 77, visible = false} -- Avatar button
+    vibrationButton = gooi.newButton({text = "", x = settingsPanel.x + settingsPanel.width / 2 - 76/2, y = settingsPanel.y + settingsPanel.height - 76*2 - 85, icon = "assets/gfx/icons/vibrationButton.png", w = 77, h = 77, visible = false} -- Avatar button
         ):onRelease(function()
             game.vibration = not game.vibration
 
@@ -242,7 +245,7 @@ function createGUI() -- All gooi buttons go here
 
 
     --Shop
-    shopButton = gooi.newButton({text = "", x = game.width - 128 - 8, y = 4 + game.notchOffset, icon = "assets/gfx/icons/bookButton.png", w = 64, h = 64, visible = true} -- Avatar button
+    shopButton = gooi.newButton({text = "", x = game.width - 128 - 8, y = 4 + game.notchOffset, icon = "assets/gfx/icons/bookButton.png", w = 64, h = 64, visible = false} -- Avatar button
         ):onRelease(function()
             game.state = "shopPanel"
 
@@ -296,6 +299,7 @@ end
 
 function updateGUI()
     --I really don't like the way of doing this. Can't quickly think of a better way though
+
     if game.state == "playing" then 
         pauseButton:setVisible(true)
     else
@@ -315,11 +319,11 @@ function updateGUI()
     if game.state == "menu" then 
         avatarButton:setVisible(true)
         settingsButton:setVisible(true)
-        shopButton:setVisible(true)
+        --shopButton:setVisible(true)
     else
         avatarButton:setVisible(false)
         settingsButton:setVisible(false)
-        shopButton:setVisible(false)
+        --shopButton:setVisible(false)
     end
 
     if game.state == "dead" then 
@@ -335,9 +339,15 @@ function updateGUI()
         musicButton:setVisible(true)
         vibrationButton:setVisible(true)
         arrowButton:setVisible(true)
+        
+        
+        --[[
         if os ~= "iOS" then 
             stretchButton:setVisible(true)
         end
+        ]]
+        
+        
         notchButton:setVisible(true)
     else
         exitSettingsPanel:setVisible(false)
@@ -346,9 +356,13 @@ function updateGUI()
         musicButton:setVisible(false)
         vibrationButton:setVisible(false)
         arrowButton:setVisible(false)
+
+        --[[
         if os ~= "iOS" then 
             stretchButton:setVisible(false)
         end
+        ]]
+
         notchButton:setVisible(false)
     end 
 
@@ -359,4 +373,11 @@ function updateGUI()
         exitShopPanel:setVisible(false)
         upgradeDrillButton:setVisible(false)
     end 
+
+
+
+   --Easier to just disable the buttons than completely remove them
+   shopButton:setVisible(false)
+   notchButton:setVisible(false)
+
 end 

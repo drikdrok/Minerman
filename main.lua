@@ -1,11 +1,11 @@
 -- NOTE:
--- I never intended for this game to be released, neither be put on github,
--- So a lot of the code isn't very optimized or elegant
+-- I made this many years ago not knowing it would be published,
+-- So a lot of the code isn't very optimized or frankly very good.
 
 require("assets/codebase/core/require")
  
 
-version = "v 1.2.0"
+version = "v 1.2.1"
 
  function love.load()
 	love.graphics.setDefaultFilter("nearest", "nearest")
@@ -127,7 +127,6 @@ end
 
 function loadImages()
 	--Load most images that will be used in the futre.
-	--Not very efficent, but frankly I have no reason to care.
 
 	titleImage = love.graphics.newImage("assets/gfx/icons/title.png")
 
