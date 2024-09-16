@@ -62,15 +62,17 @@ function game:initialize()
 		self.arrowHelp = true
 	end
 
-	--[[
 	if data["stretch"] then 
 		self.stretch = data["stretch"]
 	end
-	]]
 
 	if data["notch"] then 
 		self.notch = data["notch"]
 	end
+
+	-- As of 2024 these no longer exist
+	self.stretch = false
+	self.notch = false
 
 	if self.stretch then 
 		self.actualHeight = self.height
@@ -83,6 +85,12 @@ function game:initialize()
 	else
 		self.notchOffset = 0
 	end 
+
+	local x, y, w, h = love.window.getSafeArea( )
+	self.notchOffset = y
+
+
+
 
 	self.pauseTimer = 0
 	self.pauseCountdown = false

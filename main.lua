@@ -30,7 +30,7 @@ version = "v 1.2.1"
 	trail = trail:new()
 
 
-	gameCanvas = love.graphics.newCanvas(405, 720)
+	gameCanvas = love.graphics.newCanvas(405, 2000)
     gooi.setCanvas(gameCanvas)
 
     game.actualHeight = game.height
@@ -59,6 +59,7 @@ function love.draw()
 		game:draw()	
 	love.graphics.setCanvas()
 
+	--[[
 	if game.stretch then 
 		love.graphics.draw(gameCanvas, 0, 0, 0, gameCanvasScaleX, gameCanvasScaleY) -- Scale Everything
 	else
@@ -68,6 +69,10 @@ function love.draw()
 			love.graphics.draw(gameCanvas, 0, 0, 0, gameCanvasScaleX, gameCanvasScaleY)
 		end
 	end
+	]]
+
+	love.graphics.draw(gameCanvas, 0, 0, 0, gameCanvasScaleX, gameCanvasScaleY)
+
 	
 	if debug then 
 		love.graphics.print(love.timer.getFPS())
