@@ -4,7 +4,7 @@ First game I released on iOS and Google Play.
 
 Written in Lua using the Love2D game engine
 
-Avaliable [here]([https://play.google.com/store/apps/details?id=com.cschweng.minerman](https://drikdrok.itch.io/minerman)
+Avaliable [here](https://drikdrok.itch.io/minerman)
 
 <p float="left">
   <img src="/screenshots/1.jpg" width="250" />
